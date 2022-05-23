@@ -1,13 +1,23 @@
 import React from "react";
 import { Button, Row, Col, Typography } from "antd";
-import firebase, { auth } from "../firebase/config";
+import firebase, {auth, db} from "../firebase/config";
 import { useNavigate } from "react-router-dom";
+import {addDocument} from "../firebase/services";
 const { Title } = Typography;
 const fbProvider = new firebase.auth.FacebookAuthProvider();
 function Login() {
   const navigate = useNavigate();
-  const handleFbLogin = () => {
-    auth.signInWithPopup(fbProvider);
+  const handleFbLogin = async () => {
+  const {additionalUserInfo,user} = await auth.signInWithPopup(fbProvider);
+    if (additionalUserInfo?.isNewUser){
+      addDocument('users',{
+        displayName: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
+        uid: user.displayName,
+        providerId: additionalUserInfo.providerId
+      })
+    }
   };
 
   return (
