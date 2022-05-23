@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import {PlusSquareOutlined} from "@ant-design/icons";
 import useFirestore from "../Hooks/useFirestore";
 import AuthProvider, {AuthContext} from "../Context/AuthProvider";
+import AppProvider, {AppContext} from "../Context/AppProvider";
 const {Panel} = Collapse;
 const PannelStyle = styled(Panel)`
   
@@ -27,16 +28,11 @@ display: block;
   color: white;
 `
 function RoomList(){
+    const handleAddRoom = () => {
+        setIsAddRoomVisible(true)
+    }
+    const {rooms, setIsAddRoomVisible } = useContext(AppContext);
 
-    const {user: {uid} } = useContext(AuthContext);
-    const roomsCondition = useMemo(() => {
-      return {
-          fieldName : 'members',
-          operator: 'array-contains',
-          compareValue: uid
-      }
-    },[uid])
-    const rooms = useFirestore('room',roomsCondition)
     return (
         <Collapse ghost defaultActiveKey={['1']}>
             <PannelStyle header="Danh sách các phòng" key='1'>
@@ -44,7 +40,7 @@ function RoomList(){
                     rooms.map(room => <LinkStyled key={room.id}>{room.name}</LinkStyled>)
                 }
 
-                <Button type='text' icon={<PlusSquareOutlined/>} className="add-room">
+                <Button type='text' icon={<PlusSquareOutlined/>} className="add-room" onClick={() => handleAddRoom}>
                     Thêm Phòng
                 </Button>
             </PannelStyle>
